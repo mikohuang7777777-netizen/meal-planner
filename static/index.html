@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍽️ 全家一周食谱智能生成器</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<header class="app-header">
+  <div class="header-content">
+    <div class="logo">
+      <span class="logo-icon">🥗</span>
+      <span class="logo-text">全家食谱规划师</span>
+    </div>
+    <nav class="header-nav">
+      <button class="nav-btn active" data-view="create">📋 新建餐单</button>
+      <button class="nav-btn" data-view="history">📚 历史餐单</button>
+    </nav>
+    <div class="header-decor">
+      <span class="kid-element">👶</span>
+      <span class="kid-element">🧒</span>
+      <span class="kid-element">👩‍👩‍👧‍👦</span>
+    </div>
+  </div>
+</header>
+
+<!-- 主内容区 -->
+<main class="app-main">
+
+  <!-- ============ 创建餐单视图 ============ -->
+  <div id="view-create" class="view-container active">
+
+    <!-- 步骤条 -->
+    <div class="step-bar" id="stepBar">
+      <div class="step active" data-step="1">
+        <div class="step-num">1</div>
+        <div class="step-label">家庭成员</div>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="2">
+        <div class="step-num">2</div>
+        <div class="step-label">饮食偏好</div>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="3">
+        <div class="step-num">3</div>
+        <div class="step-label">周用餐设置</div>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="4">
+        <div class="step-num">4</div>
+        <div class="step-label">查看食谱</div>
+      </div>
+    </div>
+
+    <!-- 步骤1: 家庭成员信息 -->
+    <div id="step-1" class="step-content active">
+      <h2 class="step-title">👨‍👩‍👧‍👦 家庭成员基础信息</h2>
+      <p class="step-desc">请填写所有一起用餐的家庭成员信息，系统将据此智能计算营养需求。</p>
+
+      <div id="memberList" class="member-list"></div>
+
+      <button class="btn-add-member" onclick="addMember()">
+        <span class="add-icon">＋</span> 添加家庭成员
+      </button>
+
+      <div class="step-actions">
+        <button class="btn-primary" onclick="goToStep(2)">下一步：饮食偏好 →</button>
+      </div>
+    </div>
+
+    <!-- 步骤2: 饮食偏好 -->
+    <div id="step-2" class="step-content">
+      <h2 class="step-title">🍽️ 全家饮食偏好</h2>
+      <p class="step-desc">了解全家的口味喜好与禁忌，让每一餐都合心意。</p>
+
+      <div class="pref-journal-layout">
+      <div class="pref-section galaxy-card taste-galaxy">
+        <h3>口味偏好（可多选）</h3>
+        <div class="tag-group tag-orbit" id="tastePrefs">
+          <label class="tag-chip"><input type="checkbox" value="清淡"> 🥬 清淡</label>
+          <label class="tag-chip"><input type="checkbox" value="重口味"> 🌶️ 重口味</label>
+          <label class="tag-chip"><input type="checkbox" value="酸甜"> 🍋 酸甜</label>
+          <label class="tag-chip"><input type="checkbox" value="辣"> 🔥 辣</label>
+          <label class="tag-chip"><input type="checkbox" value="咸"> 🧂 咸香</label>
+          <label class="tag-chip"><input type="checkbox" value="鲜"> 🦐 鲜香</label>
+        </div>
+      </div>
+
+      <div class="pref-section galaxy-card food-galaxy">
+        <h3>偏好的食物类别（可多选）</h3>
+        <div class="tag-group tag-cloud" id="foodLikes">
+          <label class="tag-chip"><input type="checkbox" value="鸡肉"> 🍗 鸡肉</label>
+          <label class="tag-chip"><input type="checkbox" value="鱼肉"> 🐟 鱼肉</label>
+          <label class="tag-chip"><input type="checkbox" value="猪肉"> 🥩 猪肉</label>
+          <label class="tag-chip"><input type="checkbox" value="牛肉"> 🥓 牛肉</label>
+          <label class="tag-chip"><input type="checkbox" value="虾"> 🦐 虾</label>
+          <label class="tag-chip"><input type="checkbox" value="蛋"> 🥚 蛋类</label>
+          <label class="tag-chip"><input type="checkbox" value="豆腐"> 🧈 豆腐豆制品</label>
+          <label class="tag-chip"><input type="checkbox" value="叶菜"> 🥬 绿叶蔬菜</label>
+          <label class="tag-chip"><input type="checkbox" value="根茎"> 🥔 根茎类蔬菜</label>
+          <label class="tag-chip"><input type="checkbox" value="菌菇"> 🍄 菌菇类</label>
+          <label class="tag-chip"><input type="checkbox" value="水果"> 🍎 水果</label>
+          <label class="tag-chip"><input type="checkbox" value="面食"> 🍜 面食</label>
+        </div>
+      </div>
+
+      <div class="pref-section restriction-card">
+        <h3>忌口/过敏食物</h3>
+        <textarea id="foodRestrictions" class="input-textarea" rows="3"
+          placeholder="例如：花生过敏、不吃香菜、不吃内脏...（多个用逗号分隔）"></textarea>
+        <p class="restriction-hint">悄悄告诉我，家里谁最挑食？🥕</p>
+      </div>
+
+      <div class="pref-section galaxy-card cuisine-galaxy">
+        <h3>偏好的菜系（可多选）</h3>
+        <div class="tag-group tag-orbit soft" id="cuisinePrefs">
+          <label class="tag-chip"><input type="checkbox" value="家常"> 🏠 家常菜</label>
+          <label class="tag-chip"><input type="checkbox" value="川菜"> 🌶️ 川菜</label>
+          <label class="tag-chip"><input type="checkbox" value="粤菜"> 🥡 粤菜</label>
+          <label class="tag-chip"><input type="checkbox" value="鲁菜"> 🍖 鲁菜</label>
+          <label class="tag-chip"><input type="checkbox" value="苏菜"> 🦀 苏菜</label>
+          <label class="tag-chip"><input type="checkbox" value="湘菜"> 🔥 湘菜</label>
+          <label class="tag-chip"><input type="checkbox" value="东北菜"> 🥘 东北菜</label>
+          <label class="tag-chip"><input type="checkbox" value="日式"> 🍣 日式</label>
+          <label class="tag-chip"><input type="checkbox" value="西式"> 🍝 西式</label>
+        </div>
+      </div>
+
+      <div class="pref-section galaxy-card cooking-galaxy">
+        <h3>偏好的烹饪方式（可多选）</h3>
+        <div class="tag-group tag-cloud compact" id="cookingPrefs">
+          <label class="tag-chip"><input type="checkbox" value="炒"> 🍳 炒</label>
+          <label class="tag-chip"><input type="checkbox" value="蒸"> 🥟 蒸</label>
+          <label class="tag-chip"><input type="checkbox" value="炖"> 🍲 炖</label>
+          <label class="tag-chip"><input type="checkbox" value="煮"> 🥣 煮</label>
+          <label class="tag-chip"><input type="checkbox" value="烤"> 🔥 烤</label>
+          <label class="tag-chip"><input type="checkbox" value="凉拌"> 🥒 凉拌</label>
+        </div>
+      </div>
+      </div>
+
+      <div class="step-actions">
+        <button class="btn-secondary" onclick="goToStep(1)">← 上一步</button>
+        <button class="btn-primary" onclick="goToStep(3)">下一步：周用餐设置 →</button>
+      </div>
+    </div>
+
+    <!-- 步骤3: 周用餐设置 -->
+    <div id="step-3" class="step-content">
+      <h2 class="step-title">📅 每日三餐设置</h2>
+      <p class="step-desc">早餐、午餐、晚餐分别设置用餐人数和烹饪难易度。</p>
+
+      <div id="dailySettings" class="daily-settings-grid"></div>
+
+      <div class="pref-section">
+        <h3>🧊 冰箱余材巧利用</h3>
+        <textarea id="fridgeIngredients" class="input-textarea" rows="2"
+          placeholder="输入冰箱里现有的食材，系统会推荐可做的菜（如：西红柿、鸡蛋、土豆、青椒...）"></textarea>
+      </div>
+
+      <div class="step-actions">
+        <button class="btn-secondary" onclick="goToStep(2)">← 上一步</button>
+        <button class="btn-primary btn-generate" onclick="generatePlan()">
+          ✨ 智能生成一周食谱
+        </button>
+      </div>
+    </div>
+
+    <!-- 步骤4: 食谱展示 -->
+    <div id="step-4" class="step-content">
+      <div id="mealPlanContainer" class="meal-plan-container">
+        <!-- 动态填充 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 历史餐单视图 ============ -->
+  <div id="view-history" class="view-container">
+    <h2 class="step-title">📚 历史餐单（近4周）</h2>
+    <p class="step-desc">查看之前生成的每周餐单记录。</p>
+    <div id="historyList" class="history-grid"></div>
+    <div id="historyDetail" class="history-detail"></div>
+  </div>
+</main>
+
+<!-- 替换菜品弹窗 -->
+<div id="swapModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>🔄 替换菜品</h3>
+      <button class="modal-close" onclick="closeSwapModal()">✕</button>
+    </div>
+    <p id="swapOrigName" class="swap-orig"></p>
+    <div id="swapAlternatives" class="swap-alternatives"></div>
+  </div>
+</div>
+
+<!-- 加载动画 -->
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loading-spinner">
+    <div class="spinner-icon">🍳</div>
+    <p>正在智能生成一周食谱...</p>
+    <p class="loading-sub">根据全家营养需求精心搭配中 ✨</p>
+  </div>
+</div>
+
+<!-- Toast提示 -->
+<div id="toast" class="toast"></div>
+
+</body>
+<script src="/static/app.js"></script>
+</html>
